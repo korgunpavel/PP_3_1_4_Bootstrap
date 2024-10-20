@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
+<head>
+    <title>Spring Security Example</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+</head>
+<body>
+<!-- Заголовок -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div class="d-flex flex-grow-1">
+            <span class="navbar-brand" id="headerUsername" style="color: white"></span>
+            <span class="navbar-brand" th:utext="' with roles: '" style="color: white"></span>
+            <span class="navbar-brand" id="headerRole" style="color: white"></span>
+        </div>
+        <div class="collapse navbar-collapse flex-grow-1 text-right">
+            <ul class="navbar-nav ms-auto flex-nowrap">
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid min-vh-100 d-flex flex-column" style="background-color: #f6f7f8">
+    <!-- Кнопки слева -->
+    <div class="row flex-grow-1">
+        <nav class="col-2 p-0 mt-4">
+            <div class="list-group" style="background-color: white">
+                <a th:href="@{/admin/users}" sec:authorize="hasRole('ADMIN')"
+                   class="list-group-item list-group-item-action btn fs-4 py-3 border-0">Admin</a>
+                <a th:href="@{/user}"
+                   class="list-group-item list-group-item-action active btn fs-4 py-3 border-0">User</a>
+            </div>
+        </nav>
+        <!-- Основная страница -->
+        <div class="col-md-10 p-5" style="background: rgba(224,224,224,0.98)">
+            <h1 style="color: black">User information-page</h1>
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2 style="color: black">About user</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th style="font-size: x-large">ID</th>
+                            <th style="font-size: x-large">First name</th>
+                            <th style="font-size: x-large">Last name</th>
+                            <th style="font-size: x-large">Age</th>
+                            <th style="font-size: x-large">Role</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableUser"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src="/ShowUserInfo.js"></script>
+</body>
+</html>

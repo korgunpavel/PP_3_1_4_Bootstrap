@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
+<head>
+    <title>Spring Security Example</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <!--    <link rel="stylesheet" th:href="@{/style.css}" />-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<body>
+<!-- Заголовок -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div class="d-flex flex-grow-1">
+            <span class="navbar-brand" id="headerUsername" style="color: white"></span>
+            <span class="navbar-brand" th:utext="' with roles: '" style="color: white"></span>
+            <span class="navbar-brand" id="headerRole" style="color: white"></span>
+        </div>
+        <div class="collapse navbar-collapse flex-grow-1 text-right">
+            <ul class="navbar-nav ms-auto flex-nowrap">
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid min-vh-100 d-flex flex-column" style="background-color: #f6f7f8">
+    <!-- Кнопки слева -->
+    <div class="row flex-grow-1">
+        <nav class="col-2 p-0 mt-4">
+            <div class="list-group" style="background-color: white">
+                <a th:href="@{/admin/users}"
+                   class="list-group-item active list-group-item-action btn fs-4 py-3 border-0">Admin</a>
+                <a th:href="@{/user}" class="list-group-item list-group-item-action btn fs-4 py-3 border-0">User</a>
+            </div>
+        </nav>
+        <!-- Основная страница -->
+        <div class="col-md-10 p-5" style="background: rgba(224,224,224,0.98)">
+            <h1 style="color: black">Admin panel</h1>
+            <!-- Закладки -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active">
+                    <a href="#userTable" class="nav-link active" id="users-table-tab" onclick="showAllUsers()"
+                       role="tab" data-bs-toggle="tab">Users table</a>
+                </li>
+                <li>
+                    <a href="#newUser" class="nav-link" onclick="createUser()" role="tab" data-bs-toggle="tab">New
+                        user</a>
+                </li>
+            </ul>
+            <!-- Все пользователи -->
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="userTable">
+                    <div class="card card-default">
+                        <div class="card-header">
+                            <h2 style="color: black">About user</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th style="font-size: x-large">ID</th>
+                                    <th style="font-size: x-large">First name</th>
+                                    <th style="font-size: x-large">Last name</th>
+                                    <th style="font-size: x-large">Age</th>
+                                    <th style="font-size: x-large">Role</th>
+                                    <th style="font-size: x-large">Edit</th>
+                                    <th style="font-size: x-large">Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody class="users-table">
+                                </tbody>
+                            </table>
+                            <!-- Модальное окно редактирования пользователя-->
+                            <div class="modal fade edit-modal" role="dialog" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form id="edit-form">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit user</h5>
+                                                <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-center">
+                                                <input type="hidden" name="id">
+                                                <div class="form-group">
+                                                    <label class="fw-bold">ID
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="number"
+                                                               name="id"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">First name
+                                                        <input
+                                                                class="form-control form-control-sm"
+                                                                type="text"
+                                                                name="firstName"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Last name
+                                                        <input
+                                                                class="form-control form-control-sm"
+                                                                type="text"
+                                                                name="lastName"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Age
+                                                        <input
+                                                                class="form-control form-control-sm"
+                                                                type="number" name="age"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Username
+                                                        <input
+                                                                class="form-control form-control-sm"
+                                                                type="text" name="username"/>
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Password
+                                                        <input
+                                                                class="form-control form-control-sm"
+                                                                name="password"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Roles:
+                                                        <select class="form-control form-control-sm"
+                                                                name="roles" multiple required>
+                                                        </select>
+                                                    </label>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-info" type="submit" value="Edit">
+                                                    Edit
+                                                </button>
+                                                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Модальное окно удаления пользователя-->
+                            <div class="modal fade delete-modal" role="dialog" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form class="delete-from" id="delete-form">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete user</h5>
+                                                <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body container text-center">
+                                                <input type="hidden" name="id">
+                                                <div class="form-group">
+                                                    <label class="fw-bold">ID
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="number"
+                                                               name="id"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">First name
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="text"
+                                                               name="firstName"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-4">
+                                                    <label class="fw-bold">Last name
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="text"
+                                                               name="lastName"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Age
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="number" name="age"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Username
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="text"
+                                                               name="username"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Password
+                                                        <input disabled
+                                                               class="form-control form-control-sm"
+                                                               type="password"
+                                                               name="password"/>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label class="fw-bold">Roles:
+                                                        <select disabled class="form-control form-control-sm"
+                                                                name="roles" multiple required>
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-danger" type="submit"
+                                                        value="Delete">
+                                                    Delete
+                                                </button>
+                                                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Новый пользователь-->
+                <div class="tab-pane fade" id="newUser">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 style="color: black">Add new user</h2>
+                        </div>
+                        <div class="card-body text-center">
+                            <form id="create-user-form" class="form mx-auto w-25">
+                                <div class="form-group">
+                                    <label class="fw-bold">First name
+                                        <input required class="form-control form-control-sm" type="text"
+                                               name="firstName"/>
+                                    </label>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label class="fw-bold">Last name
+                                        <input required class="form-control form-control-sm" type="text"
+                                               name="lastName"/>
+                                    </label>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label class="fw-bold">Age
+                                        <input required class="form-control form-control-sm" type="number"
+                                               name="age"/>
+                                    </label>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label class="fw-bold">Username
+                                        <input required class="form-control form-control-sm" type="text"
+                                               name="username"/>
+                                    </label>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label class="fw-bold">Password
+                                        <input required class="form-control form-control-sm" name="password"/>
+                                    </label>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label class="fw-bold">Roles:
+                                        <select class="form-control form-control-sm" name="roles" multiple required>
+                                        </select>
+                                    </label>
+                                </div>
+                                <input class="btn btn-success" type="submit" value="Add new user"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/AdminPage.js"></script>
+</body>
+</html>
